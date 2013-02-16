@@ -4,15 +4,25 @@ class Template {
 
     public static function start() {
         $q = $_REQUEST['q'];
-        $className = $q."Page";
-        $page = new $className;        
+        if ($q == '') {
+            $q = "index";
+        }
+        $className = $q . "Page";
+        $page = new $className;
 
-        $page->handlePost($page);
-
+        if (count($_POST) > 0) {
+            $page->handlePost($page);
+        }
         self::render($page);
     }
 
+    public static function redirect($path) {
+        header("Location: " . $path);
+        exit();
+    }
+
     private static function handlePost($page) {
+
         $page->handlePost();
     }
 
@@ -49,14 +59,30 @@ class Template {
             <?php
         }
 
+        private static function getNavigation() {
+            global $dbh;
+            $result = array();
+            foreach ($dbh->query("select * from navigation") as $row) {
+                $obj = new stdClass();
+                $obj->name = $row['name'];
+                $obj->path = $row['path'];
+                $obj->auth = (boolean) $row['auth'];
+                $result[] = $obj;
+            }
+            return $result;
+        }
+
         public static function Navigation() {
+            $navArray = self::getNavigation();
             ?>
             <nav>
                 <ul>
-                    <li><a href = "#">Home<a/></li>
-                    <li><a href = "#">Parties<a/></li>
-                    <li><a href = "#">Account<a/></li>
-                    <li><a href = "#">Logout<a/></li>
+                    <?php
+                    foreach ($navArray as $link) {
+                        if($link->auth === Authenticate::loggedIn())
+                            echo "<li><a href=\"" . $link->path . "\">" . $link->name . "</a></li>";
+                    }
+                    ?>
                 </ul>
             </nav>
 

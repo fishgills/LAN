@@ -4,16 +4,16 @@ class User extends dbObject {
 
     function __construct() {
         $this->queries = array(
-            'login' => "select id from users where email = :email and password = :password",
-            'getById' => 'SELECT email FROM users WHERE id = :id',
-            'addUser' => 'INSERT INTO people (login, password) VALUES (:login, :password)',
-            'updateUser' => 'UPDATE users SET login = :login, first_name = :fname, last_name = :lname WHERE id = :id',
+            'login' => "select id from people where login = :login and password = sha1(:password)",
+            'getById' => 'SELECT login FROM people WHERE id = :id',
+            'addUser' => 'INSERT INTO people (login, password) VALUES (:login, SHA1(:password))'
+//            'updateUser' => 'UPDATE users SET login = :login, first_name = :fname, last_name = :lname WHERE id = :id',
         );
         parent::__construct();
     }
     
     public function loadForLogin($login, $password) {
-        $this->$login = $login;
+        $this->login = $login;
         $this->password = $password;
         $stmt = $this->doStatement("login", true);
         if(!$result = $stmt->fetch()) {
@@ -27,7 +27,7 @@ class User extends dbObject {
     }
 
     public function save() {
-        if ($this->id === NULL) {
+        if (!isset($this->id)) {
             $this->add();
         } else {
             $this->update();

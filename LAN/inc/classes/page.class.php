@@ -1,6 +1,6 @@
 <?php
 abstract class Page {
-    private $data = Array();
+    public $data = Array();
     
     abstract public function render();
     abstract public function _handlePost();
