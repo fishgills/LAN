@@ -2,7 +2,15 @@
 
 class RegisterPage extends Page {
 
-    public function handlePost() {
+    public function _handlePost() {
+        if($this->data['password'] != $this->data['password2']) {
+            throw new Exception("Passwords must match!");
+        }
+        $user = new User();
+        $user->login = $this->data['login'];
+        $user->password = $this->data['password'];
+        $user->save();
+        Template::redirect("/");
     }
     public function render() {
         ?>
