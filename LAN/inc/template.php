@@ -9,13 +9,17 @@ class Template {
         }
         $className = $q . "Page";
         $page = new $className;
-
+        $page->preHook();
+        
         if (count($_POST) > 0) {
             $page->handlePost($page);
         }
         self::render($page);
     }
 
+    public static function reload() {
+        self::redirect($_SERVER['REQUEST_URI']);
+    }
     public static function redirect($path) {
         header("Location: " . $path);
         exit();
@@ -41,11 +45,15 @@ class Template {
             <head>
                 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
                 <title></title>
+                <link href='http://fonts.googleapis.com/css?family=Oswald|Open+Sans' rel='stylesheet' type='text/css'>
                 <link rel="stylesheet" href="/css/reset.css" type="text/css">
                 <link rel="stylesheet" href="/js/jquery-ui-1.10.1.custom/css/smoothness/jquery-ui-1.10.1.custom.min.css" type="text/css">
+                <link rel="stylesheet" href="/css/other.css" type="text/css">
                 <link rel="stylesheet" href="/css/main.css" type="text/css">
                 <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
                 <script src="/js/jquery-ui-1.10.1.custom/js/jquery-ui-1.10.1.custom.min.js"></script>
+                <script src="/js/jquery-ui-timepicker-addon.js"></script>
+                <script src="/js/main.js"></script>
             </head>
 
             <?php
@@ -79,7 +87,7 @@ class Template {
                 <ul>
                     <?php
                     foreach ($navArray as $link) {
-                        if($link->auth === Authenticate::loggedIn())
+                        if ($link->auth === Authenticate::loggedIn())
                             echo "<li><a href=\"" . $link->path . "\">" . $link->name . "</a></li>";
                     }
                     ?>

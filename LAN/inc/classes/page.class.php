@@ -5,6 +5,9 @@ abstract class Page {
     abstract public function render();
     abstract public function _handlePost();
     
+    public function preHook() {
+        
+    }
     public function handlePost() {
         $this->processPost();
         $this->_handlePost();
